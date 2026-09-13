@@ -1,0 +1,10 @@
+import { chromium } from 'playwright';
+const browser = await chromium.launch({ args: ['--use-angle=metal'] });
+const page = await browser.newPage({ viewport: { width: 800, height: 500 } });
+const logs = [];
+page.on('console', (m) => logs.push(`[${m.type()}] ${m.text()}`));
+page.on('pageerror', (e) => logs.push(`[pageerror] ${e.message}\n${(e.stack||'').split('\n').slice(0,6).join('\n')}`));
+await page.goto('http://127.0.0.1:5173', { waitUntil: 'domcontentloaded' });
+await page.waitForTimeout(6000);
+console.log(logs.slice(0, 25).join('\n') || 'no logs');
+await browser.close();
